@@ -12,5 +12,4 @@ target_include_directories(${PROJECT_NAME}
 	$<INSTALL_INTERFACE:BlackBox/GuiTools/Editor>
 )
 
-find_package(imgui CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC imgui::imgui)
