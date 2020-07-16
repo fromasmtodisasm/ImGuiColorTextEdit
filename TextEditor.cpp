@@ -836,7 +836,14 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 
 	ImGui::PushStyleColor(ImGuiCol_ChildBg, ImGui::ColorConvertU32ToFloat4(mPalette[(int)PaletteIndex::Background]));
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
-	ImGui::BeginChild(aTitle, aSize, aBorder, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_AlwaysHorizontalScrollbar | ImGuiWindowFlags_NoMove);
+	//ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.1f);
+	ImGui::BeginChild(aTitle, aSize, aBorder, 
+		ImGuiWindowFlags_HorizontalScrollbar
+		| ImGuiWindowFlags_AlwaysHorizontalScrollbar
+		| ImGuiWindowFlags_NoMove
+		| ImGuiWindowFlags_NoBackground
+	);
+	//ImGui::SetNextWindowBgAlpha(0.5);
 	ImGui::PushAllowKeyboardFocus(true);
 
 	HandleKeyboardInputs();
@@ -846,7 +853,7 @@ void TextEditor::Render(const char* aTitle, const ImVec2& aSize, bool aBorder)
 
 	ImGui::PopAllowKeyboardFocus();
 	ImGui::EndChild();
-	ImGui::PopStyleVar();
+	ImGui::PopStyleVar(1);
 	ImGui::PopStyleColor();
 
 	mWithinRender = false;
