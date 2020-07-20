@@ -8,6 +8,8 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui.h" // for imGui::GetCurrentWindow()
+#include <BlackBox/Input/IInput.hpp>
+CDummyDocumentWriter TextEditor::mDummyDocWriter;
 
 // TODO
 // - multiline comments vs single-line: latter is blocking start of a ML
@@ -26,7 +28,7 @@ bool equals(InputIt1 first1, InputIt1 last1,
 	return first1 == last1 && first2 == last2;
 }
 
-TextEditor::TextEditor()
+TextEditor::TextEditor(IDocumentWriter* pDocWriter)
 	: mLineSpacing(1.0f)
 	, mUndoIndex(0)
 	, mTabSize(4)
@@ -43,6 +45,7 @@ TextEditor::TextEditor()
 	, mSelectionMode(SelectionMode::Normal)
 	, mCheckComments(true)
 	, mLastClick(-1.0f)
+	, mDocumentWriter(pDocWriter ? pDocWriter : &mDummyDocWriter)
 {
 	SetPalette(GetDarkPalette());
 	SetLanguageDefinition(LanguageDefinition::HLSL());
@@ -469,7 +472,11 @@ void TextEditor::HandleKeyboardInputs()
 		io.WantCaptureKeyboard = true;
 		io.WantTextInput = true;
 
-		if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Z)))
+		if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed(eKI_S))
+			mDocumentWriter->Write(GetText());
+		else if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed(eKI_Space))
+			AutoComplete();
+		else if (!IsReadOnly() && ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Z)))
 			Undo();
 		else if (!IsReadOnly() && !ctrl && !shift && alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Backspace)))
 			Undo();
@@ -1617,6 +1624,11 @@ void TextEditor::Redo(int aSteps)
 {
 	while (CanRedo() && aSteps-- > 0)
 		mUndoBuffer[mUndoIndex++].Redo(this);
+}
+
+void TextEditor::AutoComplete()
+{
+	ImGui::OpenPopup("test");
 }
 
 const TextEditor::Palette & TextEditor::GetDarkPalette()
@@ -2770,4 +2782,9 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Lua()
 		inited = true;
 	}
 	return langDef;
+}
+
+bool CDummyDocumentWriter::Write(const std::string& str)
+{
+	return false;
 }

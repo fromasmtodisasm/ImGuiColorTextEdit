@@ -12,4 +12,4 @@ target_include_directories(${PROJECT_NAME}
 	$<INSTALL_INTERFACE:BlackBox/GuiTools/Editor>
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC imgui::imgui)
+target_link_libraries(${PROJECT_NAME} PUBLIC imgui::imgui Math)

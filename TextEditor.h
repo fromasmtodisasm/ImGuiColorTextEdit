@@ -11,6 +11,18 @@
 #include <functional>
 #include "imgui.h"
 
+struct IDocumentWriter
+{
+	virtual ~IDocumentWriter(){}
+	virtual bool Write(const std::string& str) = 0;
+};
+
+class CDummyDocumentWriter : public IDocumentWriter
+{
+	// Inherited via IDocumentWriter
+	virtual bool Write(const std::string& str) override;
+};
+
 class TextEditor
 {
 public:
@@ -176,7 +188,7 @@ public:
 		static const LanguageDefinition& Lua();
 	};
 
-	TextEditor();
+	TextEditor(IDocumentWriter* pDocWriter = nullptr);
 	~TextEditor();
 
 	void SetLanguageDefinition(const LanguageDefinition& aLanguageDef);
@@ -235,6 +247,8 @@ public:
 	bool CanRedo() const;
 	void Undo(int aSteps = 1);
 	void Redo(int aSteps = 1);
+
+	void AutoComplete();
 
 	static const Palette& GetDarkPalette();
 	static const Palette& GetLightPalette();
@@ -350,4 +364,7 @@ private:
 	Coordinates mInteractiveStart, mInteractiveEnd;
 	
 	float mLastClick;
+
+	IDocumentWriter* mDocumentWriter;
+	static CDummyDocumentWriter mDummyDocWriter;
 };
